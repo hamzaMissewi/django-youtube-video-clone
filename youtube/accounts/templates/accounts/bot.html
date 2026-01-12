@@ -1,0 +1,187 @@
+{% extends 'base.html' %} {% load static %} {% block title %}AI Helper - YouTube
+Clone{% endblock %} {% block extra_css %}
+<style>
+  .bot-container {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 160px);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+  }
+
+  .bot-header {
+    padding: 20px 24px;
+    background: var(--bg-tertiary);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .bot-status {
+    width: 12px;
+    height: 12px;
+    background: var(--success-green);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--success-green);
+  }
+
+  .chat-messages {
+    flex: 1;
+    padding: 24px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .message {
+    max-width: 80%;
+    padding: 12px 16px;
+    border-radius: var(--radius-md);
+    font-size: 0.95rem;
+  }
+
+  .message.bot {
+    align-self: flex-start;
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border-bottom-left-radius: 2px;
+  }
+
+  .message.user {
+    align-self: flex-end;
+    background: var(--accent-red);
+    color: white;
+    border-bottom-right-radius: 2px;
+  }
+
+  .chat-input-area {
+    padding: 20px 24px;
+    background: var(--bg-tertiary);
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    gap: 12px;
+  }
+
+  .chat-input {
+    flex: 1;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-full);
+    padding: 12px 20px;
+    color: var(--text-primary);
+    font-family: inherit;
+    outline: none;
+    transition: border-color var(--transition-fast);
+  }
+
+  .chat-input:focus {
+    border-color: var(--accent-red);
+  }
+
+  .send-btn {
+    background: var(--accent-red);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform var(--transition-fast);
+  }
+
+  .send-btn:hover {
+    transform: scale(1.05);
+    background: var(--accent-red-hover);
+  }
+</style>
+{% endblock %} {% block content %}
+<div class="bot-container">
+  <div class="bot-header">
+    <div class="bot-status"></div>
+    <div>
+      <h2 style="font-size: 1.1rem; margin: 0">Mr. AI Assistant</h2>
+      <p style="font-size: 0.8rem; color: var(--text-secondary); margin: 0">
+        Online | Ready to help
+      </p>
+    </div>
+  </div>
+
+  <div class="chat-messages" id="chat-messages">
+    <div class="message bot">
+      Hello! I'm Mr. AI, your personal YouTube Clone assistant. How can I help
+      you today?
+    </div>
+    <div class="message bot">
+      You can ask me about uploading videos, account settings, or how to search
+      for content!
+    </div>
+  </div>
+
+  <div class="chat-input-area">
+    <input
+      type="text"
+      class="chat-input"
+      id="chat-input"
+      placeholder="Ask me something..."
+    />
+    <button class="send-btn" id="send-btn">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <line x1="22" y1="2" x2="11" y2="13"></line>
+        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+      </svg>
+    </button>
+  </div>
+</div>
+{% endblock %} {% block extra_js %}
+<script>
+  const chatInput = document.getElementById("chat-input");
+  const sendBtn = document.getElementById("send-btn");
+  const chatMessages = document.getElementById("chat-messages");
+
+  function addMessage(text, isUser = false) {
+    const msgDiv = document.createElement("div");
+    msgDiv.className = `message ${isUser ? "user" : "bot"}`;
+    msgDiv.textContent = text;
+    chatMessages.appendChild(msgDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  function handleSend() {
+    const text = chatInput.value.trim();
+    if (!text) return;
+
+    addMessage(text, true);
+    chatInput.value = "";
+
+    // Simple bot response simulation
+    setTimeout(() => {
+      addMessage(
+        "That's a great question! I'm currently in 'read-only' mode while my developers finish my brain. Stay tuned for full AI features!"
+      );
+    }, 1000);
+  }
+
+  sendBtn.addEventListener("click", handleSend);
+  chatInput.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") handleSend();
+  });
+</script>
+{% endblock %}

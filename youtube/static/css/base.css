@@ -1,0 +1,25 @@
+/**
+ * Base styles - Reset and foundational styles
+ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    line-height: 1.6;
+}
+
+/* Main Content Container */
+.main-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 24px;
+}
+

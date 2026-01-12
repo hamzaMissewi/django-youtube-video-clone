@@ -1,0 +1,127 @@
+{% extends 'base.html' %} {% load static %} {% block title %}About - YouTube
+Clone{% endblock %} {% block extra_css %}
+<style>
+  .about-hero {
+    text-align: center;
+    padding: 60px 20px;
+    background: linear-gradient(
+      135deg,
+      var(--bg-secondary) 0%,
+      var(--bg-primary) 100%
+    );
+    border-radius: var(--radius-lg);
+    margin-bottom: 40px;
+    border: 1px solid var(--border-color);
+  }
+
+  .about-hero h1 {
+    font-size: 3rem;
+    margin-bottom: 16px;
+    background: linear-gradient(
+      to right,
+      var(--accent-red),
+      var(--accent-red-light)
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .about-content {
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.8;
+  }
+
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 24px;
+    margin-top: 40px;
+  }
+
+  .feature-card {
+    background: var(--bg-secondary);
+    padding: 32px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+    transition: transform var(--transition-normal);
+  }
+
+  .feature-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent-red);
+  }
+
+  .feature-card h3 {
+    color: var(--accent-red);
+    margin-bottom: 12px;
+  }
+
+  .tech-stack {
+    margin-top: 60px;
+    text-align: center;
+  }
+
+  .tech-tags {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+  }
+
+  .tech-tag {
+    background: var(--bg-tertiary);
+    padding: 8px 20px;
+    border-radius: var(--radius-full);
+    font-size: 0.9rem;
+    border: 1px solid var(--border-color);
+  }
+</style>
+{% endblock %} {% block content %}
+<div class="about-hero">
+  <h1>Our Vision</h1>
+  <p class="about-content">
+    Welcome to YouTube Clone, a modern, high-performance video sharing platform
+    built with Django and optimized for global streaming. Our mission is to
+    provide an open space for creators to share their work with the world.
+  </p>
+</div>
+
+<div class="about-content">
+  <h2>Key Features</h2>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <h3>🚀 High Speed</h3>
+      <p>
+        Optimized video delivery using ImageKit's global CDN and
+        high-performance encoding.
+      </p>
+    </div>
+    <div class="feature-card">
+      <h3>🎨 Modern UI</h3>
+      <p>
+        A sleek, dark-mode first interface designed for the modern web
+        experience.
+      </p>
+    </div>
+    <div class="feature-card">
+      <h3>🤖 AI Integration</h3>
+      <p>Advanced AI-powered features for video summaries and smart search.</p>
+    </div>
+  </div>
+
+  <div class="tech-stack">
+    <h2>Built With Passion</h2>
+    <div class="tech-tags">
+      <span class="tech-tag">Django 6.0</span>
+      <span class="tech-tag">Python 3.13</span>
+      <span class="tech-tag">HLS.js</span>
+      <span class="tech-tag">ImageKit.io</span>
+      <span class="tech-tag">Vanilla CSS</span>
+      <span class="tech-tag">Modern JS</span>
+    </div>
+  </div>
+</div>
+{% endblock %}

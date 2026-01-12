@@ -1,0 +1,59 @@
+{% extends 'base.html' %} {% load static %} {% block title %} Videos - YouTube
+Clone {% endblock %} {% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/videos.css' %}" />
+{% endblock %} {% block content %}
+<div class="list-header" style="margin-bottom: 24px">
+  {% if is_trending %}
+  <h1>🔥 Trending Videos</h1>
+  {% elif query %}
+  <h1>Search results for "{{ query }}"</h1>
+  {% else %}
+  <h1>Recommended</h1>
+  {% endif %}
+</div>
+
+{% if videos %}
+<div class="video-grid">
+  {% for video in videos %}
+  <a href="{% url 'videos:detail' video.id %}" class="video-card">
+    <div class="video-thumbnail">
+      <img
+        src="{{ video.display_thumbnail_url }}"
+        alt="{{ video.title }}"
+        loading="lazy"
+      />
+      <span class="play-icon">▶</span>
+    </div>
+    <div class="video-info">
+      <h3 class="video-title">{{ video.title }}</h3>
+      <p class="video-meta">
+        {{ video.user.username }} | {{ video.views }} views
+      </p>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <span class="empty-icon">📂</span>
+  {% if query %}
+  <h2>No videos found for "{{ query }}"</h2>
+  <p>Try different keywords or browse all videos.</p>
+  <a
+    href="{% url 'videos:list' %}"
+    class="nav-link btn-primary"
+    style="display: inline-block; margin-top: 16px"
+    >Browse All</a
+  >
+  {% else %}
+  <h2>No videos yet</h2>
+  <p>Be the first one to upload a video!</p>
+  <a
+    href="{% url 'videos:upload' %}"
+    class="nav-link btn-primary"
+    style="display: inline-block; margin-top: 16px"
+    >Upload Now</a
+  >
+  {% endif %}
+</div>
+{% endif %} {% endblock %}

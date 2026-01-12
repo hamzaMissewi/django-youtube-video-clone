@@ -1,0 +1,86 @@
+/**
+ * Button styles
+ */
+
+.btn {
+    padding: 14px 32px;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: all var(--transition-normal);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.btn-primary {
+    background: var(--accent-red);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--accent-red-hover);
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover {
+    background: var(--border-color);
+    transform: translateY(-2px);
+}
+
+.btn-submit {
+    width: 100%;
+    padding: 14px 24px;
+    background: var(--accent-red);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    margin-top: 8px;
+}
+
+.btn-submit:hover {
+    background: var(--accent-red-hover);
+    transform: translateY(-1px);
+}
+
+.btn-submit:active {
+    transform: translateY(0);
+}
+
+.btn-cancel {
+    width: 100%;
+    padding: 14px 24px;
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    text-decoration: none;
+    text-align: center;
+    display: block;
+}
+
+.btn-cancel:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+

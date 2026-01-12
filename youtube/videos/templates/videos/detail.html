@@ -1,0 +1,154 @@
+{% extends 'base.html' %} {% load static %} {% block title %} {{ video.title }}
+- YouTube Clone {% endblock %} {% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/videos.css' %}" />
+<link rel="stylesheet" href="{% static 'css/videoplayer.css' %}" />
+{% endblock %} {% block content %}
+
+<div class="video-player-container">
+  <div class="video-player">
+    {% if video.is_youtube %}
+    <iframe
+      width="100%"
+      height="100%"
+      src="https://www.youtube.com/embed/{{ video.youtube_id }}?autoplay=1&mute=1"
+      frameborder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowfullscreen
+    ></iframe>
+    {% else %}
+    <video
+      id="video-player"
+      controls
+      muted
+      preload="none"
+      poster="{{ video.display_thumbnail_url }}"
+    ></video>
+    <div id="video-error" class="video-error" style="display: none">
+      <span class="error-icon">⚠</span>
+      <p>Video Unavailable</p>
+      <small>The video file could not be loaded.</small>
+    </div>
+    {% endif %}
+  </div>
+  <div class="video-details">
+    <h1>{{ video.title }}</h1>
+
+    <div class="video-stats">
+      <span class="video-stats-left"
+        >{{ video.views }} views | {{ video.created_at|date:"M d, Y" }} {% if
+        video.is_youtube %}
+        <span class="source-badge">via YouTube</span>
+        {% else %}
+        <span class="source-badge local">Independent</span>
+        {% endif %}
+      </span>
+      <div class="video-actions">
+        <button
+          class="vote-btn {% if user_vote == 1 %}active{% endif %}"
+          data-vote="like"
+          onclick="vote({{ video.id }}, 'like')"
+        >
+          👍 <span id="like-count">{{ video.likes }}</span>
+        </button>
+        <button
+          class="vote-btn {% if user_vote == -1 %}active{% endif %}"
+          data-vote="dislike"
+          onclick="vote({{ video.id }}, 'dislike')"
+        >
+          👎 <span id="dislike-count">{{ video.dislikes }}</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="video-channel">
+      <div class="channel-avatar">{{ video.user.username|slice:":1"}}</div>
+      <a
+        href="{% url 'videos:channel' video.user.username %}"
+        class="channel-name"
+        >{{ video.user.username }}</a
+      >
+    </div>
+
+    {% if video.description %}
+    <p class="video-description">{{ video.description }}</p>
+    {% endif %} {% if request.user == video.user %}
+    <div class="video-owner-actions">
+      <button
+        class="delete-btn"
+        type="button"
+        onclick="deleteVideo({{ video.id }})"
+      >
+        Delete
+      </button>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %} {% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<script>
+  const videoPlayer = document.getElementById("video-player")
+  const videoError = document.getElementById("video-error")
+  const streamingUrl = '{{ video.streaming_url }}'
+  const fallbackUrl = '{{ video.optimized_url }}'
+
+  if (Hls.isSupported()) {
+      const hls = new Hls({
+          startLevel: -1,
+          capLevelToPlayerSize: true
+      })
+      hls.loadSource(streamingUrl)
+      hls.attachMedia(videoPlayer)
+      hls.on(Hls.Events.ERROR, (event, data) => {
+          if (data.datal) {
+              videoPlayer.src = fallbackUrl
+          }
+      })
+  } else if (videoPlayer.canPlayType("application/vnd.apple.mpegurl")) {
+      videoPlayer.src = streamingUrl
+  } else {
+      videoPlayer.src = fallbackUrl
+  }
+
+  videoPlayer.addEventListener("error", () => {
+      videoPlayer.style.display = "none"
+      videoError.style.display = "flex"
+  })
+
+  const csrf = '{{ csrf_token }}'
+  function deleteVideo(videoId) {
+      if (!confirm("Are you sure you want to delete this?")) return
+      fetch(`/${videoId}/delete/`, {method: "POST", headers: { "X-CSRFToken": csrf }})
+          .then( r => r.json())
+          .then( data => {
+              if (data.success) window.location.href = '{% url "videos:list" %}'
+              else alert(data.error || "Failed to delete.")
+          })
+          .catch(() => alert('Failed to delete'))
+  }
+
+  function vote(videoId, voteType) {
+      {% if not user.is_authenticated %}
+      window.location.href = '{% url "accounts:login" %}'
+      return
+      {% endif %}
+
+      fetch(`/${videoId}/vote/`, {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/x-www-form-urlencoded", "X-CSRFToken": csrf
+          },
+          body: `vote=${voteType}`
+      })
+          .then(r => r.json())
+          .then(data => {
+              document.getElementById("like-count").textContent = data.likes
+              document.getElementById("dislike-count").textContent = data.dislikes
+              document.querySelectorAll(".vote-btn").forEach(btn => btn.classList.remove("active"))
+              if (data.user_vote === 1) document.querySelector('[data-vote="like"]').classList.add("active")
+              else if (data.user_vote === -1) document.querySelector('[data-vote="dislike"]').classList.add("active")
+          })
+  }
+</script>
+
+{% endblock %}

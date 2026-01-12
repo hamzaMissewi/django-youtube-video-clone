@@ -1,0 +1,146 @@
+{% extends 'base.html' %} {% load static %} {% block title %}{{
+profile_user.username }}'s Profile - YouTube Clone{% endblock %} {% block
+extra_css %}
+<style>
+  .profile-container {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .profile-header {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    padding: 40px;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    border: 1px solid var(--border-color);
+    margin-bottom: 32px;
+  }
+
+  .profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: linear-gradient(
+      135deg,
+      var(--accent-red) 0%,
+      var(--accent-red-light) 100%
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 3rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    box-shadow: 0 8px 16px rgba(255, 0, 51, 0.2);
+  }
+
+  .profile-info h1 {
+    font-size: 2rem;
+    margin: 0 0 8px;
+  }
+
+  .profile-stats {
+    display: flex;
+    gap: 24px;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+  }
+
+  .stat-item b {
+    color: var(--text-primary);
+  }
+
+  .profile-actions {
+    display: flex;
+    gap: 12px;
+  }
+
+  .section-title {
+    font-size: 1.25rem;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-title::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--border-color);
+  }
+</style>
+{% endblock %} {% block content %}
+<div class="profile-container">
+  <div class="profile-header">
+    <div class="profile-avatar">{{ profile_user.username|slice:":1"}}</div>
+    <div class="profile-info">
+      <h1>
+        {% if profile_user == user %}My Local Dashboard{% else %}{{
+        profile_user.username }}{% endif %}
+      </h1>
+      <div class="profile-stats">
+        <span class="stat-item"
+          ><b>{{ profile_user.videos.count }}</b> Videos</span
+        >
+        <span class="stat-item"
+          >Joined <b>{{ profile_user.date_joined|date:"M Y" }}</b></span
+        >
+      </div>
+      <div class="profile-actions">
+        {% if profile_user == user %}
+        <a href="{% url 'videos:upload' %}" class="nav-link btn-primary"
+          >Upload New Video</a
+        >
+        <a href="{% url 'accounts:logout' %}" class="nav-link btn-outline"
+          >Sign Out</a
+        >
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <h2 class="section-title">
+    {% if profile_user == user %}My Published Videos{% else %}Videos by {{
+    profile_user.username }}{% endif %}
+  </h2>
+
+  {% if profile_user.videos.all %}
+  <div class="video-grid">
+    {% for video in profile_user.videos.all %}
+    <a href="{% url 'videos:detail' video.id %}" class="video-card">
+      <div class="video-thumbnail">
+        <img
+          src="{{ video.display_thumbnail_url }}"
+          alt="{{ video.title }}"
+          loading="lazy"
+        />
+        <span class="play-icon">▶</span>
+      </div>
+      <div class="video-info">
+        <h3 class="video-title">{{ video.title }}</h3>
+        <p class="video-meta">
+          {{ video.views }} views | {{ video.created_at|timesince }} ago
+        </p>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <span class="empty-icon">🎬</span>
+    <h2>No videos found</h2>
+    <p>Ready to share something with the world?</p>
+    <a
+      href="{% url 'videos:upload' %}"
+      class="nav-link btn-primary"
+      style="display: inline-block; margin-top: 16px"
+      >Start Uploading</a
+    >
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

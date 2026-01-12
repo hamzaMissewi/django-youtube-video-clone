@@ -1,0 +1,216 @@
+{% extends 'base.html' %} {% load static %} {% block title %}Upload Video -
+YouTube Clone{% endblock %} {% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/videos.css' %}" />
+<link rel="stylesheet" href="{% static 'css/upload.css' %}" />
+{% endblock %} {% block content %}
+<div class="upload-overlay" id="uploadOverlay">
+  <div class="upload-progress-container">
+    <div class="upload=spinner"></div>
+    <h2 id="uploadStatus">Uploading Video...</h2>
+    <p class="upload-warning">Please don't close this page</p>
+  </div>
+</div>
+
+<div class="upload-container">
+  <div class="upload-card">
+    <h1>Upload Video</h1>
+
+    <form
+      method="post"
+      enctype="multipart/form-data"
+      class="upload-form"
+      id="uploadForm"
+    >
+      {% csrf_token %}
+
+      <div id="errorContainer">
+        {% if form.errors %}
+        <ul class="error-list">
+          {% for field in form %} {% for error in field.errors %}
+          <li>{{error}}</li>
+          {% endfor %} {% endfor %} {% for error in form.non_field_errros %}
+          <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </div>
+
+      <div class="form-group">
+        <label for="id_title">Title</label>
+        <input
+          type="text"
+          name="title"
+          id="id_title"
+          class="form-input"
+          placeholder="Enter video title"
+          value="{{ form.title.value|default:'' }}"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="id_description">Description</label>
+        <textarea
+          name="description"
+          id="id_description"
+          class="form-input"
+          placeholder="Enter video description"
+          rows="3"
+        >
+{{ form.description.value|default:'' }}</textarea
+        >
+      </div>
+
+      <div
+        class="form-group"
+        style="
+          border: 1px solid var(--border-color);
+          padding: 16px;
+          border-radius: var(--radius-md);
+        "
+      >
+        <h3
+          style="
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+            color: var(--accent-red);
+          "
+        >
+          Option 1: Upload File
+        </h3>
+        <label for="id_video_file">Video File</label>
+        <label class="file-input-wrapper" for="id_video_file">
+          <span id="video-label">Click to select a video file</span>
+        </label>
+        <input
+          type="file"
+          name="video_file"
+          id="id_video_file"
+          accept="video/*"
+          style="display: none"
+        />
+        <span class="help-text">MP4, WebM, MOV, or AVI, Max 100MB</span>
+      </div>
+
+      <div style="text-align: center; font-weight: bold; margin: 10px 0">
+        - OR -
+      </div>
+
+      <div
+        class="form-group"
+        style="
+          border: 1px solid var(--border-color);
+          padding: 16px;
+          border-radius: var(--radius-md);
+        "
+      >
+        <h3
+          style="
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+            color: var(--accent-red);
+          "
+        >
+          Option 2: YouTube Link
+        </h3>
+        <label for="id_youtube_id">YouTube Video ID</label>
+        <input
+          type="text"
+          name="youtube_id"
+          id="id_youtube_id"
+          class="form-input"
+          placeholder="e.g. dQw4w9WgXcQ"
+        />
+        <span class="help-text">Paste the ID from a YouTube URL</span>
+      </div>
+
+      <div class="form-group">
+        <label for="customThumbnail">Thumbnail (optional)</label>
+        <label class="file-input-wrapper thumb-wrapper" for="customThumbnail">
+          <img id="thumbPreview" />
+          <span id="thumb-label">Click to select a thumbnail</span>
+        </label>
+        <input
+          type="file"
+          id="customThumbnail"
+          accept="image/*"
+          style="display: none"
+        />
+        <input type="hidden" name="thumbnail_data" id="thumbnailData" />
+        <span class="help-text"
+          >Leave empty to auto-generate from your video</span
+        >
+      </div>
+
+      <button type="submit" class="btn-submit" id="submitBtn">
+        Upload Video
+      </button>
+    </form>
+  </div>
+</div>
+
+{% endblock %} {% block extra_js %}
+<script>
+  const $ = (id) => document.getElementById(id);
+
+  $("id_video_file").onchange = (e) => {
+    const file = e.target.files[0];
+    $("video-label").textContent = file
+      ? `${file.name}`
+      : "Click to select a video file";
+  };
+
+  $("customThumbnail").onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      $("thumbPreview").src = ev.target.result;
+      $("thumbPreview").classList.add("visible");
+      $("thumb-label").style.display = "none";
+      $("thumbnailData").value = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
+
+  $("uploadForm").onsubmit = async (e) => {
+    e.preventDefault();
+
+    if (
+      (!$("id_video_file").files.length && !$("id_youtube_id").value.trim()) ||
+      !$("id_title").value.trim()
+    ) {
+      alert("Please provide a title and either a video file or a YouTube ID.");
+      return;
+    }
+
+    $("uploadOverlay").classList.add("active");
+    $("submitBtn").disabled = true;
+    $("errorContainer").innerHtml = "";
+    window.onbeforeunload = () => "Upload in progress";
+
+    try {
+      const res = await fetch("{% url 'videos:upload_submit' %}", {
+        method: "POST",
+        body: new FormData(e.target),
+      });
+      const data = await res.json();
+      window.onbeforeunload = null;
+
+      if (data.success) {
+        $("uploadStatus").textContent = "Upload complete!";
+        setTimeout(() => (location.href = '{% url "videos:list" %}'), 500);
+      } else {
+        throw new Error(data.error);
+      }
+    } catch (err) {
+      window.onbeforeunload = null;
+      $("uploadOverlay").classList.remove("active");
+      $("submitBtn").disabled = false;
+      $("errorContainer").innerHTML = `<ul class="error-list"><li>${
+        err.message || "Upload failed"
+      }</li></ul>`;
+    }
+  };
+</script>
+{% endblock %}

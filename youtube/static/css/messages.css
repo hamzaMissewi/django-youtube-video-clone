@@ -1,0 +1,34 @@
+/**
+ * Flash messages and notifications
+ */
+
+.messages {
+    list-style: none;
+    margin-bottom: 20px;
+}
+
+.message {
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+}
+
+.message.success {
+    background: rgba(46, 204, 113, 0.15);
+    border: 1px solid var(--success-green);
+    color: var(--success-green);
+}
+
+.message.error {
+    background: rgba(231, 76, 60, 0.15);
+    border: 1px solid var(--error-red);
+    color: var(--error-red);
+}
+
+.message.info {
+    background: rgba(52, 152, 219, 0.15);
+    border: 1px solid var(--info-blue);
+    color: var(--info-blue);
+}
+

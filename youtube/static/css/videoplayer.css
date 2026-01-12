@@ -1,0 +1,58 @@
+/**
+ * Native HTML5 video player styling
+ */
+
+.video-player {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: #000;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    margin-bottom: 24px;
+}
+
+.video-player video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.video-error {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    text-align: center;
+    gap: 12px;
+}
+
+.error-icon {
+    font-size: 3rem;
+    color: var(--accent-red);
+}
+
+.video-error p {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.video-error small {
+    color: var(--text-secondary);
+}
+
+video::-webkit-media-controls {
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+}
+
+video::-webkit-media-controls-panel {
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+}
